@@ -13,7 +13,7 @@ server.use(express.json());
 server.use("/api", apiRouter);
 
 server.get("/", (req, res) => {
-  res.status(200).json({ message: "Goliath online" });
+  res.send("Goliath online");
 });
 
 module.exports = server;
