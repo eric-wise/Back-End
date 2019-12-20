@@ -28,7 +28,7 @@ router.post("/login", authBody, authLoginKeys, (req, res) => {
       if (user && bcjs.compareSync(password, user.password)) {
         let token = generateToken(user);
         res.status(200).json({
-          id: user.id,
+          ...user,
           token: token
         });
       } else {
