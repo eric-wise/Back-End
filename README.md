@@ -29,6 +29,7 @@ post
 Expects
 
 ```
+Body
 {
     username: // string, unique, mandatory
     password: // string, mandatory
@@ -43,7 +44,6 @@ Returns
 {
     id: // auto incremented
     username: //
-    password: // hashed
     location: //
     email: //
 }
@@ -66,6 +66,7 @@ post
 Expects
 
 ```
+Body
 {
     username: //
     password: //
@@ -76,40 +77,11 @@ Returns
 
 ```
 {
-    id: // auto incremented
+    id: // save this somewhere, required to pass as "user_id" header for protected routes
     username: //
-    password: // hashed
     location: //
     email: //
     token: // save this somewhere, it needs passed as an "authorization" header for protected routes
-}
-```
-
-### Get User By ID ( auth required )
-
-Endpoint
-
-```
-users/:id
-```
-
-Method
-
-```
-get
-```
-
-Expects a parameter
-
-Returns
-
-```
-{
-    id: // auto incremented
-    username: //
-    password: // hashed
-    location: //
-    email: //
 }
 ```
 
@@ -131,7 +103,9 @@ Method
 get
 ```
 
-Returns
+Expects authorization and user_id headers
+
+Returns (for now, less detail than checking individually. Will work on bringing them to the same level of detail)
 
 ```
 [
@@ -145,11 +119,6 @@ Returns
     days_open: //
     user_id: //
     photo_url: //
-    reviews: [
-        {...},
-        {...}
-    ]
-    rating: //
 },
 {
     id: //
@@ -161,11 +130,6 @@ Returns
     days_open: //
     user_id: //
     photo_url: //
-    reviews: [
-        {...},
-        {...}
-    ]
-    rating: //
 },
 ...
 ]
@@ -185,7 +149,7 @@ Method
 get
 ```
 
-Expects a parameter
+Expects an ID passed in the url, authorization and user_id headers
 
 Returns
 
@@ -222,9 +186,10 @@ Method
 post
 ```
 
-Expects
+Expects authorization header
 
 ```
+Body
 {
     name: // string, unique, required
     cuisine: // string, required
@@ -267,9 +232,10 @@ Method
 put
 ```
 
-Expects a parameter
+Expects an id passed in the url, authorization and user_id headers
 
 ```
+Body
 {
     name: // string, unique, required
     cuisine: // string, required
@@ -311,6 +277,6 @@ Method
 delete
 ```
 
-Expects a parameter
+Expects an id passed in the url, authorization and user_id headers
 
 Returns status 204 if successful
