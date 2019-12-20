@@ -1,7 +1,6 @@
 const db = require("./userModel.js");
 const bcjs = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const authMiddleware = require("../auth.js");
 
 const router = require("express").Router();
 
@@ -29,7 +28,10 @@ router.post("/login", authBody, authLoginKeys, (req, res) => {
       if (user && bcjs.compareSync(password, user.password)) {
         let token = generateToken(user);
         res.status(200).json({
-          ...user,
+          id: user.id,
+          username: username,
+          location: user.location,
+          email: user.email,
           token: token
         });
       } else {
@@ -39,18 +41,6 @@ router.post("/login", authBody, authLoginKeys, (req, res) => {
     .catch(err => {
       res.status(500).json({ message: "Error logging in" });
     });
-});
-
-router.get("/:id", authMiddleware, (req, res) => {
-  const id = req.params.id;
-
-  id
-    ? db.findBy({ id }).then(user => {
-        user
-          ? res.status(200).json({ user })
-          : res.status(404).json({ message: "Can't find user with that ID" });
-      })
-    : res.status(400).json({ message: "Missing ID parameter" });
 });
 
 function generateToken(user) {

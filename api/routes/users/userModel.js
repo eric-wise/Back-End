@@ -2,7 +2,7 @@ const db = require("../../../data/dbConfig.js");
 
 function addUser(user) {
   return db("users")
-    .returning(["id", "username", "password", "location", "email"])
+    .returning(["id", "username", "location", "email"])
     .insert(user);
 }
 

@@ -16,27 +16,29 @@ function addRest(rest) {
     .insert(rest);
 }
 
-async function getRest(value) {
+async function getRest(id, user_id) {
   const restaurant = await db("restaurants")
-    .where("id", value)
+    .where("id", id)
+    .andWhere("user_id", user_id)
     .first();
 
-  const reviews = await db
-    .select("*")
-    .from("items")
-    .where("restaurant_id", value);
+  const reviews = await db("items").where("restaurant_id", id);
 
   const list = await reviews.map(cv => {
     return cv.rating;
   });
 
-  const rating = await (list.reduce((total, amount) => total + amount) /
-    list.length);
+  var rating;
+
+  if (list.length > 0) {
+    rating = await (list.reduce((total, amount) => total + amount) /
+      list.length);
+  }
 
   return {
     ...restaurant,
     reviews: reviews,
-    rating: rating
+    rating: rating || "N/A"
   };
 }
 
@@ -46,41 +48,22 @@ function findById(key) {
     .first();
 }
 
-async function getAll() {
-  const list = await db("restaurants");
-
-  const newList = await list.map(async cv => {
-    const reviews = await db
-      .select("*")
-      .from("items")
-      .where("restaurant_id", cv.id);
-
-    const ratingsList = await reviews.map(curVal => {
-      return curVal.rating;
-    });
-
-    const rating = await (list.reduce((total, amount) => total + amount) /
-      ratingsList.length);
-
-    return {
-      ...cv,
-      reviews: reviews,
-      rating: rating
-    };
-  });
-  return newList;
+function getAll(user_id) {
+  return db("restaurants").where("user_id", user_id);
 }
 
-function updateRest(id, obj) {
+function updateRest(id, obj, user_id) {
   return db("restaurants")
     .where("id", id)
+    .andWhere("user_id", user_id)
     .update(obj)
-    .returning(Object.keys(obj));
+    .returning(["id", ...Object.keys(obj)])
 }
 
-function delRest(id) {
+function delRest(id, user_id) {
   return db("restaurants")
     .where("id", id)
+    .andWhere("user_id", user_id)
     .del();
 }
 

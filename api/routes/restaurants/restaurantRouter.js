@@ -6,7 +6,9 @@ const router = require("express").Router();
 router.use(authMiddleware);
 
 router.get("/", (req, res) => {
-  db.getAll()
+  const user_id = req.headers.user_id;
+
+  db.getAll(user_id)
     .then(rest => {
       res.status(200).json(rest);
     })
@@ -17,7 +19,9 @@ router.get("/", (req, res) => {
 
 router.get("/:id", validateId, (req, res) => {
   const id = req.params.id;
-  db.getRest(id)
+  const user_id = req.headers.user_id;
+
+  db.getRest(id, user_id)
     .then(rest => {
       rest
         ? res.status(200).json(rest)
@@ -51,10 +55,11 @@ router.put(
   (req, res) => {
     const id = req.params.id;
     const changes = req.body;
+    const user_id = req.headers.user_id;
 
-    db.updateRest(id, changes)
+    db.updateRest(id, changes, user_id)
       .then(rest => {
-        res.status(200).json(rest);
+        res.status(200).json(rest[0]);
       })
       .catch(err => {
         res.status(500).json({ message: "Error updating restaurant" });
@@ -64,8 +69,9 @@ router.put(
 
 router.delete("/:id", validateId, (req, res) => {
   const id = req.params.id;
+  const user_id = req.headers.user_id;
 
-  db.delRest(id)
+  db.delRest(id, user_id)
     .then(rest => {
       res.status(204).end();
     })
