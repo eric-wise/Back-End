@@ -1,6 +1,7 @@
 const db = require("./restaurantModel.js");
 const userDb = require("../users/userModel.js");
 const authMiddleware = require("../auth.js");
+const itemDb = require("../items/itemsModel");
 
 const router = require("express").Router();
 router.use(authMiddleware);
@@ -77,6 +78,20 @@ router.delete("/:id", validateId, (req, res) => {
     })
     .catch(err => {
       res.status(500).json({ message: "Error deleting restaurant" });
+    });
+});
+
+router.get("/:id/items", validateId, validateUserId, (req, res) => {
+  const id = req.params.id;
+  const user_id = req.headers.user_id;
+
+  itemDb
+    .getByRestaurant(id, user_id)
+    .then(items => {
+      res.status(200).json(items);
+    })
+    .catch(err => {
+      res.status(500).json({ message: "Error retrieving items" });
     });
 });
 

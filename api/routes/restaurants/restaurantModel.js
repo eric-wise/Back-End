@@ -2,17 +2,7 @@ const db = require("../../../data/dbConfig.js");
 
 function addRest(rest) {
   return db("restaurants")
-    .returning([
-      "id",
-      "name",
-      "cuisine",
-      "location",
-      "hour_open",
-      "hour_closed",
-      "days_open",
-      "user_id",
-      "photo_url"
-    ])
+    .returning(["id", ...Object.keys(rest)])
     .insert(rest);
 }
 
@@ -57,7 +47,7 @@ function updateRest(id, obj, user_id) {
     .where("id", id)
     .andWhere("user_id", user_id)
     .update(obj)
-    .returning(["id", ...Object.keys(obj)])
+    .returning(["id", ...Object.keys(obj)]);
 }
 
 function delRest(id, user_id) {

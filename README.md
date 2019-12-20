@@ -7,7 +7,7 @@ Hello and welcome! Please enjoy this beautiful documentation and please let me k
 Use this to prefix the beginning of all requests. Moving forward, all endpoints in this documentation will assume the base url has already been input before the endpoint being addressed.
 
 ```
-https://bw-foodiefun.herokuapp.com/api/
+https://bw-foodiefun.herokuapp.com/api
 ```
 
 ## Users Route
@@ -17,7 +17,7 @@ https://bw-foodiefun.herokuapp.com/api/
 Endpoint
 
 ```
-users/register
+/users/register
 ```
 
 Method
@@ -54,7 +54,7 @@ Returns
 Endpoint
 
 ```
-users/login
+/users/login
 ```
 
 Method
@@ -94,7 +94,7 @@ Note that all restaurant endpoints are auth required
 Endpoint
 
 ```
-restaurants/
+/restaurants/
 ```
 
 Method
@@ -140,7 +140,7 @@ Returns (for now, less detail than checking individually. Will work on bringing 
 Endpoint
 
 ```
-restaurants/:id
+/restaurants/:id
 ```
 
 Method
@@ -177,7 +177,7 @@ Returns
 Endpoint
 
 ```
-/
+/restaurants/
 ```
 
 Method
@@ -223,7 +223,7 @@ Returns
 Endpoint
 
 ```
-/restaurant/:id
+/restaurants/:id
 ```
 
 Method
@@ -268,7 +268,192 @@ Returns
 Endpoint
 
 ```
-/:id
+/restaurants/:id
+```
+
+Method
+
+```
+delete
+```
+
+Expects an id passed in the url, authorization and user_id headers
+
+Returns status 204 if successful
+
+### View Reviews of Restaurant
+
+Endpoint
+
+```
+/restaurants/:id/items
+```
+
+Method
+
+```
+get
+```
+
+Expects an ID passed in url, authorization and user_id headers
+
+Returns
+
+```
+[
+{
+    "id": //
+    "restaurant_id": //
+    "cuisine": //
+    "name": //
+    "photo_url": //
+    "rating": //
+    "review": //
+    "user_id": //
+},
+{
+    "id": //
+    "restaurant_id": //
+    "cuisine": //
+    "name": //
+    "photo_url": //
+    "rating": //
+    "review": //
+    "user_id": //
+},
+...
+]
+```
+
+## Items Route
+
+Note that all items route are auth required
+
+### Get By Id
+
+Endpoint
+
+```
+/items/:id
+```
+
+Method
+
+```
+get
+```
+
+Expects an ID passed in the URL, authorization and user_id headers
+
+Returns
+
+```
+{
+  "id": //
+  "restaurant_id": //
+  "cuisine": //
+  "name": //
+  "photo_url": //
+  "rating": //
+  "review": //,
+  "user_id": //
+}
+```
+
+### Add A Review
+
+Endpoint
+
+```
+/items/
+```
+
+Method
+
+```
+post
+```
+
+Expects authorization and user_id headers
+
+```
+Body
+{
+    "restaurant_id": // integer, required
+    "cuisine": // string, required
+    "name": // string, required
+    "photo_url": // string
+    "rating": // integer, required
+    "review": // string, required
+    "user_id": // integer, required
+}
+```
+
+Returns
+
+```
+{
+    "id": // auto increments
+    "restaurant_id": //
+    "cuisine": //
+    "name": //
+    "photo_url": //
+    "rating": //
+    "review": //
+    "user_id": //
+}
+```
+
+### Update A Review
+
+Endpoint
+
+```
+/items/:id
+```
+
+Method
+
+```
+put
+```
+
+Expects authorization and user_id headers
+
+```
+Body
+{
+    "restaurant_id": // integer, required
+    "cuisine": // string, required
+    "name": // string, required
+    "photo_url": // string
+    "rating": // integer, required
+    "review": // string, required
+    "user_id": // integer, required
+}
+```
+
+Returns
+
+```
+{
+    "id": //
+    "restaurant_id": //
+    "cuisine": //
+    "name": //
+    "photo_url": //
+    "rating": //
+    "review": //
+    "user_id": //
+}
+```
+
+### Delete A Review
+
+Endpoint
+
+```
+/items/:id
 ```
 
 Method
