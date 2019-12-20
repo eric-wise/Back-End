@@ -46,8 +46,29 @@ function findById(key) {
     .first();
 }
 
-function getAll() {
-  return db("restaurants");
+async function getAll() {
+  const list = await db("restaurants");
+
+  const newList = await list.map(async cv => {
+    const reviews = await db
+      .select("*")
+      .from("items")
+      .where("restaurant_id", cv.id);
+
+    const ratingsList = await reviews.map(curVal => {
+      return curVal.rating;
+    });
+
+    const rating = await (list.reduce((total, amount) => total + amount) /
+      ratingsList.length);
+
+    return {
+      ...cv,
+      reviews: reviews,
+      rating: rating
+    };
+  });
+  return newList;
 }
 
 function updateRest(id, obj) {

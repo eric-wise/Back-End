@@ -1,6 +1,7 @@
 const db = require("./userModel.js");
 const bcjs = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const authMiddleware = require("../auth.js");
 
 const router = require("express").Router();
 
@@ -40,7 +41,7 @@ router.post("/login", authBody, authLoginKeys, (req, res) => {
     });
 });
 
-router.get("/user/:id", (req, res) => {
+router.get("/:id", authMiddleware, (req, res) => {
   const id = req.params.id;
 
   id
