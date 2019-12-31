@@ -105,27 +105,47 @@ function validateBody(req, res, next) {
 function validateItemKeys(req, res, next) {
   const { restaurant_id, cuisine, name, rating, review, user_id } = req.body;
 
-  restaurant_id
-    ? cuisine
-      ? name
-        ? rating
-          ? review
-            ? next()
+  restaurant_id & (typeof restaurant_id == "number")
+    ? cuisine & (typeof cuisine == "string")
+      ? name & (typeof name == "string")
+        ? rating & (typeof rating == "number")
+          ? review & (typeof review == "string")
+            ? user_id & (typeof user_id == "number")
+              ? next()
+              : res.status(400).json({
+                  message:
+                    "Request body is missing key of user_id or user_id is NaN"
+                })
             : res
                 .status(400)
-                .json({ message: "Request body is missing key of user_id" })
+                .json({
+                  message:
+                    "Request body is missing key of review or review is not a string"
+                })
           : res
               .status(400)
-              .json({ message: "Request body is missing key of rating" })
+              .json({
+                message:
+                  "Request body is missing key of rating or rating is NaN"
+              })
         : res
             .status(400)
-            .json({ message: "Request body is missing key of name" })
+            .json({
+              message:
+                "Request body is missing key of name or name is not a string"
+            })
       : res
           .status(400)
-          .json({ message: "Request body is missing key of cuisine" })
+          .json({
+            message:
+              "Request body is missing key of cuisine or cuisine is not a string"
+          })
     : res
         .status(400)
-        .json({ message: "Request body is missing key of restaurant_id" });
+        .json({
+          message:
+            "Request body is missing key of restaurant_id or restaurant_id is NaN"
+        });
 }
 
 function validateRestaurantId(req, res, next) {
