@@ -4,22 +4,28 @@ const jwt = require("jsonwebtoken");
 
 const router = require("express").Router();
 
-router.post("/register", authBody, authRegKeys, (req, res) => {
-  const creds = req.body;
+router.post(
+  "/register",
+  authBody,
+  authRegKeys,
+  dupeUsernameCheck,
+  (req, res) => {
+    const creds = req.body;
 
-  const hash = bcjs.hashSync(creds.password, 8);
-  creds.password = hash;
+    const hash = bcjs.hashSync(creds.password, 8);
+    creds.password = hash;
 
-  db.addUser(creds)
-    .then(user => {
-      res.status(201).json(user);
-    })
-    .catch(err => {
-      res
-        .status(500)
-        .json({ message: "Error adding a new user to the database" });
-    });
-});
+    db.addUser(creds)
+      .then(user => {
+        res.status(201).json(user[0]);
+      })
+      .catch(err => {
+        res
+          .status(500)
+          .json({ message: "Error adding a new user to the database" });
+      });
+  }
+);
 
 router.post("/login", authBody, authLoginKeys, (req, res) => {
   const { username, password } = req.body;
@@ -66,24 +72,61 @@ function authBody(req, res, next) {
 
 function authRegKeys(req, res, next) {
   const { username, password, location, email } = req.body;
-  username
-    ? password
-      ? location
-        ? email
+  username & (typeof username == "string")
+    ? password & (typeof password == "string")
+      ? location & (typeof location == "string")
+        ? email & (typeof email == "string")
           ? next()
-          : res.status(400).json({ message: "Request body is missing email" })
-        : res.status(400).json({ message: "Request body is missing location" })
-      : res.status(400).json({ message: "Request body is missing password" })
-    : res.status(400).json({ message: "Request body is missing username" });
+          : res.status(400).json({
+              message: "Request body is missing email or email is not a string"
+            })
+        : res.status(400).json({
+            message:
+              "Request body is missing location or location is not a string"
+          })
+      : res.status(400).json({
+          message:
+            "Request body is missing password or password is not a string"
+        })
+    : res.status(400).json({
+        message: "Request body is missing username or username is not a string"
+      });
 }
 
 function authLoginKeys(req, res, next) {
   const { username, password } = req.body;
-  username
-    ? password
+  username & (typeof username == "string")
+    ? password & (typeof password == "string")
       ? next()
-      : res.status(400).json({ message: "Request body is missing password" })
-    : res.status(400).json({ message: "Request body is missing username" });
+      : res
+          .status(400)
+          .json({
+            message:
+              "Request body is missing password or password is not a string"
+          })
+    : res
+        .status(400)
+        .json({
+          message:
+            "Request body is missing username or username is not a string"
+        });
+}
+
+function dupeUsernameCheck(req, res, next) {
+  const { username } = req.body;
+  db.findBy({ username })
+    .then(user => {
+      if (user) {
+        res.status(409).json({ message: "Username already in use" });
+      } else {
+        next();
+      }
+    })
+    .catch(err => {
+      res
+        .status(500)
+        .json({ message: "Error checking for duplicate username" });
+    });
 }
 
 module.exports = router;

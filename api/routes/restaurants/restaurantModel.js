@@ -38,7 +38,13 @@ function findById(key) {
     .first();
 }
 
-function getAll(user_id) {
+function findByName(key) {
+  return db("restaurants")
+    .where("name", key)
+    .first();
+}
+
+function getAll(user_name) {
   return db("restaurants").where("user_id", user_id);
 }
 
@@ -63,5 +69,6 @@ module.exports = {
   getRest,
   getAll,
   updateRest,
-  delRest
+  delRest,
+  findByName
 };

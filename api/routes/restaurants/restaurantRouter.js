@@ -35,17 +35,26 @@ router.get("/:id", validateId, (req, res) => {
     });
 });
 
-router.post("/", validateBody, validateRestKeys, validateUserId, (req, res) => {
-  const creds = req.body;
+router.post(
+  "/",
+  validateBody,
+  validateRestKeys,
+  dupeNameCheck,
+  validateUserId,
+  (req, res) => {
+    const creds = req.body;
 
-  db.addRest(creds)
-    .then(rest => {
-      res.status(201).json(rest);
-    })
-    .catch(err => {
-      res.status(500).json({ message: "Error adding restaurant to database" });
-    });
-});
+    db.addRest(creds)
+      .then(rest => {
+        res.status(201).json(rest);
+      })
+      .catch(err => {
+        res
+          .status(500)
+          .json({ message: "Error adding restaurant to database" });
+      });
+  }
+);
 
 router.put(
   "/:id",
@@ -107,6 +116,18 @@ function validateId(req, res, next) {
   });
 }
 
+function dupeNameCheck(req, res, next) {
+  const name = req.body.name;
+
+  db.findByName(name).then(rest => {
+    rest
+      ? res
+          .status(409)
+          .json({ message: "Restaurant with that name already exists" })
+      : next();
+  });
+}
+
 function validateBody(req, res, next) {
   Object.entries(req.body).length > 0
     ? next()
@@ -124,29 +145,54 @@ function validateRestKeys(req, res, next) {
     user_id
   } = req.body;
 
-  name
-    ? cuisine
-      ? location
-        ? hour_open
-          ? hour_closed
-            ? days_open
-              ? user_id
+  name & (typeof name == "string")
+    ? cuisine & (typeof cuisine == "string")
+      ? location & (typeof location == "string")
+        ? hour_open & (typeof hour_open == "number")
+          ? hour_closed & (typeof hour_closed == "number")
+            ? days_open & (typeof days_open == "string")
+              ? user_id & (typeof user_id == "number")
                 ? next()
                 : res
                     .status(400)
-                    .json({ message: "Request body is missing user_id" })
+                    .json({
+                      message:
+                        "Request body is missing user_id or user_id is NaN"
+                    })
               : res
                   .status(400)
-                  .json({ message: "Request body is missing days_open" })
+                  .json({
+                    message:
+                      "Request body is missing days_open or days_open is not a string"
+                  })
             : res
                 .status(400)
-                .json({ message: "Request body is missing hour_closed" })
+                .json({
+                  message:
+                    "Request body is missing hour_closed or hour_closed is NaN"
+                })
           : res
               .status(400)
-              .json({ message: "Request body is missing hour_open" })
-        : res.status(400).json({ message: "Request body is missing location" })
-      : res.status(400).json({ message: "Request body is missing cuisine" })
-    : res.status(400).json({ message: "Request body is missing name" });
+              .json({
+                message: "Request body is missing hour_open or hour_open is NaN"
+              })
+        : res
+            .status(400)
+            .json({
+              message:
+                "Request body is missing location or location is not a string"
+            })
+      : res
+          .status(400)
+          .json({
+            message:
+              "Request body is missing cuisine or cuisine is not a string"
+          })
+    : res
+        .status(400)
+        .json({
+          message: "Request body is missing name or name is not a string"
+        });
 }
 
 function validateUserId(req, res, next) {
