@@ -10,6 +10,16 @@ Use this to prefix the beginning of all requests. Moving forward, all endpoints 
 https://bw-foodiefun.herokuapp.com/api
 ```
 
+### IMPORTANT NOTE
+
+Many applications add the "Content-Type" header and set it to a default "application/json" automatically. However, this is not always the case. If you have the correct endpoint, correct body, and the other appropriate headers, this MAY be the issue. Or, consider passing it in all of your requests anyway to be safe.
+
+This was specifically brought to my attention by an iOS developer as necessary for him to pass, but it may also explain issues a React.js dev was experiencing as well.
+
+```
+Content-Type = application/json
+```
+
 ## Users Route
 
 ### Register
