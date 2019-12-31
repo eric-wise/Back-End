@@ -145,54 +145,38 @@ function validateRestKeys(req, res, next) {
     user_id
   } = req.body;
 
-  name & (typeof name == "string")
-    ? cuisine & (typeof cuisine == "string")
-      ? location & (typeof location == "string")
-        ? hour_open & (typeof hour_open == "number")
-          ? hour_closed & (typeof hour_closed == "number")
-            ? days_open & (typeof days_open == "string")
-              ? user_id & (typeof user_id == "number")
+  name && typeof name == "string"
+    ? cuisine && typeof cuisine == "string"
+      ? location && typeof location == "string"
+        ? hour_open && typeof hour_open == "number"
+          ? hour_closed && typeof hour_closed == "number"
+            ? days_open && typeof days_open == "string"
+              ? user_id && typeof user_id == "number"
                 ? next()
-                : res
-                    .status(400)
-                    .json({
-                      message:
-                        "Request body is missing user_id or user_id is NaN"
-                    })
-              : res
-                  .status(400)
-                  .json({
-                    message:
-                      "Request body is missing days_open or days_open is not a string"
+                : res.status(400).json({
+                    message: "Request body is missing user_id or user_id is NaN"
                   })
-            : res
-                .status(400)
-                .json({
+              : res.status(400).json({
                   message:
-                    "Request body is missing hour_closed or hour_closed is NaN"
+                    "Request body is missing days_open or days_open is not a string"
                 })
-          : res
-              .status(400)
-              .json({
-                message: "Request body is missing hour_open or hour_open is NaN"
+            : res.status(400).json({
+                message:
+                  "Request body is missing hour_closed or hour_closed is NaN"
               })
-        : res
-            .status(400)
-            .json({
-              message:
-                "Request body is missing location or location is not a string"
+          : res.status(400).json({
+              message: "Request body is missing hour_open or hour_open is NaN"
             })
-      : res
-          .status(400)
-          .json({
+        : res.status(400).json({
             message:
-              "Request body is missing cuisine or cuisine is not a string"
+              "Request body is missing location or location is not a string"
           })
-    : res
-        .status(400)
-        .json({
-          message: "Request body is missing name or name is not a string"
-        });
+      : res.status(400).json({
+          message: "Request body is missing cuisine or cuisine is not a string"
+        })
+    : res.status(400).json({
+        message: "Request body is missing name or name is not a string"
+      });
 }
 
 function validateUserId(req, res, next) {

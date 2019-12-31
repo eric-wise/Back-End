@@ -72,10 +72,10 @@ function authBody(req, res, next) {
 
 function authRegKeys(req, res, next) {
   const { username, password, location, email } = req.body;
-  username & (typeof username == "string")
-    ? password & (typeof password == "string")
-      ? location & (typeof location == "string")
-        ? email & (typeof email == "string")
+  username && typeof username == "string"
+    ? password && typeof password == "string"
+      ? location && typeof location == "string"
+        ? email && typeof email == "string"
           ? next()
           : res.status(400).json({
               message: "Request body is missing email or email is not a string"
@@ -98,18 +98,13 @@ function authLoginKeys(req, res, next) {
   username & (typeof username == "string")
     ? password & (typeof password == "string")
       ? next()
-      : res
-          .status(400)
-          .json({
-            message:
-              "Request body is missing password or password is not a string"
-          })
-    : res
-        .status(400)
-        .json({
+      : res.status(400).json({
           message:
-            "Request body is missing username or username is not a string"
-        });
+            "Request body is missing password or password is not a string"
+        })
+    : res.status(400).json({
+        message: "Request body is missing username or username is not a string"
+      });
 }
 
 function dupeUsernameCheck(req, res, next) {
