@@ -95,8 +95,8 @@ function authRegKeys(req, res, next) {
 
 function authLoginKeys(req, res, next) {
   const { username, password } = req.body;
-  username & (typeof username == "string")
-    ? password & (typeof password == "string")
+  username && typeof username == "string"
+    ? password && typeof password == "string"
       ? next()
       : res.status(400).json({
           message:
