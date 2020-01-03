@@ -44,7 +44,7 @@ function findByName(key) {
     .first();
 }
 
-function getAll(user_name) {
+function getAll(user_id) {
   return db("restaurants").where("user_id", user_id);
 }
 
