@@ -97,7 +97,11 @@ Returns
 
 ## Restaurants Route
 
-Note that all restaurant endpoints are auth required
+Note that all restaurant endpoints are auth / user_id required.
+
+Note that numbers beginning with 0 are illegal in JSON
+
+Note user_id passed in body is expected to match user_id header
 
 ### Get All
 

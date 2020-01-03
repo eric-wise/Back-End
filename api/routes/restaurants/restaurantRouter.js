@@ -40,6 +40,7 @@ router.post(
   validateBody,
   validateRestKeys,
   dupeNameCheck,
+  militaryTime,
   validateUserId,
   (req, res) => {
     const creds = req.body;
@@ -61,6 +62,7 @@ router.put(
   validateId,
   validateBody,
   validateRestKeys,
+  militaryTime,
   validateUserId,
   (req, res) => {
     const id = req.params.id;
@@ -181,9 +183,29 @@ function validateRestKeys(req, res, next) {
 
 function validateUserId(req, res, next) {
   const id = req.body.user_id;
-  userDb.findBy({ id }).then(user => {
-    user ? next() : res.status(404).json({ message: "Invalid user ID" });
-  });
+  const user_id = req.headers.user_id;
+
+  id !== user_id
+    ? res.status(400).json({
+        message: "Body key of user_id and header of user_id do not match"
+      })
+    : userDb.findBy({ id }).then(user => {
+        user ? next() : res.status(404).json({ message: "Invalid user ID" });
+      });
+}
+
+function militaryTime(req, res, next) {
+  const { hour_open, hour_closed } = req.body;
+
+  hour_open.toString().charAt(0) == 0
+    ? res
+        .status(400)
+        .json({ message: "Does not accept numbers beginning with 0" })
+    : hour_closed.toString().charAt(0) == 0
+    ? res
+        .status(400)
+        .json({ message: "Does not accept numbers beginning with 0" })
+    : next();
 }
 
 module.exports = router;
