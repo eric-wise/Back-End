@@ -91,9 +91,15 @@ function validateId(req, res, next) {
 
 function validateUserId(req, res, next) {
   const id = req.body.user_id;
-  userDb.findBy({ id }).then(user => {
-    user ? next() : res.status(404).json({ message: "Invalid user ID" });
-  });
+  const user_id = req.headers.user_id;
+
+  id != user_id
+    ? res.status(400).json({
+        message: "Body key of user_id and header of user_id do not match"
+      })
+    : userDb.findBy({ id }).then(user => {
+        user ? next() : res.status(404).json({ message: "Invalid user ID" });
+      });
 }
 
 function validateBody(req, res, next) {
