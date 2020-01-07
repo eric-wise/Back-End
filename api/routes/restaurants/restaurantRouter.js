@@ -39,7 +39,6 @@ router.post(
   "/",
   validateBody,
   validateRestKeys,
-  dupeNameCheck,
   militaryTime,
   validateUserId,
   (req, res) => {
@@ -47,7 +46,7 @@ router.post(
 
     db.addRest(creds)
       .then(rest => {
-        res.status(201).json(rest);
+        res.status(201).json(rest[0]);
       })
       .catch(err => {
         res
@@ -115,18 +114,6 @@ function validateId(req, res, next) {
     rest
       ? next()
       : res.status(404).json({ message: "Can't find restaurant with that ID" });
-  });
-}
-
-function dupeNameCheck(req, res, next) {
-  const name = req.body.name;
-
-  db.findByName(name).then(rest => {
-    rest
-      ? res
-          .status(409)
-          .json({ message: "Restaurant with that name already exists" })
-      : next();
   });
 }
 

@@ -2,10 +2,7 @@ exports.up = function(knex) {
   return knex.schema
     .createTable("restaurants", tbl => {
       tbl.increments();
-      tbl
-        .text("name", 128)
-        .notNullable()
-        .unique();
+      tbl.text("name", 128).notNullable();
       tbl.text("cuisine", 128).notNullable();
       tbl.text("location", 128).notNullable();
       tbl
@@ -56,4 +53,8 @@ exports.up = function(knex) {
     });
 };
 
-exports.down = function(knex) {};
+exports.down = function(knex) {
+  return knex.schema
+    .dropTableIfExists("items")
+    .dropTableIfExists("restaurants");
+};
