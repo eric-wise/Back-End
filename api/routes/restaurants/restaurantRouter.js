@@ -35,33 +35,23 @@ router.get("/:id", validateId, (req, res) => {
     });
 });
 
-router.post(
-  "/",
-  validateBody,
-  validateRestKeys,
-  militaryTime,
-  validateUserId,
-  (req, res) => {
-    const creds = req.body;
+router.post("/", validateBody, validateRestKeys, validateUserId, (req, res) => {
+  const creds = req.body;
 
-    db.addRest(creds)
-      .then(rest => {
-        res.status(201).json(rest[0]);
-      })
-      .catch(err => {
-        res
-          .status(500)
-          .json({ message: "Error adding restaurant to database" });
-      });
-  }
-);
+  db.addRest(creds)
+    .then(rest => {
+      res.status(201).json(rest[0]);
+    })
+    .catch(err => {
+      res.status(500).json({ message: "Error adding restaurant to database" });
+    });
+});
 
 router.put(
   "/:id",
   validateId,
   validateBody,
   validateRestKeys,
-  militaryTime,
   validateUserId,
   (req, res) => {
     const id = req.params.id;
@@ -91,7 +81,7 @@ router.delete("/:id", validateId, (req, res) => {
     });
 });
 
-router.get("/:id/items", validateId, validateUserId, (req, res) => {
+router.get("/:id/items", validateId, validatePublisherId, (req, res) => {
   const id = req.params.id;
   const user_id = req.headers.user_id;
 
@@ -137,8 +127,8 @@ function validateRestKeys(req, res, next) {
   name && typeof name == "string"
     ? cuisine && typeof cuisine == "string"
       ? location && typeof location == "string"
-        ? hour_open && typeof hour_open == "number"
-          ? hour_closed && typeof hour_closed == "number"
+        ? hour_open >= 0 && typeof hour_open == "number"
+          ? hour_closed >= 0 && typeof hour_closed == "number"
             ? days_open && typeof days_open == "string"
               ? user_id && typeof user_id == "number"
                 ? next()
@@ -181,18 +171,17 @@ function validateUserId(req, res, next) {
       });
 }
 
-function militaryTime(req, res, next) {
-  const { hour_open, hour_closed } = req.body;
+function validatePublisherId(req, res, next) {
+  const user_id = req.headers.user_id;
+  const id = req.params.id;
 
-  hour_open.toString().charAt(0) == 0
-    ? res
-        .status(400)
-        .json({ message: "Does not accept numbers beginning with 0" })
-    : hour_closed.toString().charAt(0) == 0
-    ? res
-        .status(400)
-        .json({ message: "Does not accept numbers beginning with 0" })
-    : next();
+  db.getRest(id, user_id).then(rest => {
+    rest.user_id == user_id
+      ? next()
+      : res.status(403).json({
+          message: "user_id header does not match restaurant's user_id"
+        });
+  });
 }
 
 module.exports = router;
